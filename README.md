@@ -1,4 +1,5 @@
-**Incomplete->Will Use extension
+*Incomplete->Will Use extension*
+
 #Android Project 3 - *Name of App Here*
 
 Submitted by: **Your Name Here**
