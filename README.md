@@ -45,6 +45,8 @@ LICEcap
 ## Notes
 
 Describe any challenges encountered while building the app.
+- Parsing JSON from Raw to Array
+- Getting the API call to go through
 
 ## License
 
