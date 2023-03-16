@@ -1,6 +1,7 @@
 package com.codepath.bestsellerlistapp
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,21 @@ import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.codepath.asynchttpclient.AsyncHttpClient
+import com.codepath.asynchttpclient.RequestParams
+import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 import com.codepath.bestsellerlistapp.R
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
+import okhttp3.Headers
+import org.json.JSONArray
+import org.json.JSONObject
 
 // --------------------------------//
 // CHANGE THIS TO BE YOUR API KEY  //
 // --------------------------------//
-private const val API_KEY = "<YOUR-API-KEY-HERE>"
+private const val API_KEY = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
 
 /*
  * The class for the only fragment in the app, which contains the progress bar,
@@ -33,7 +43,7 @@ class BestSellerBooksFragment : Fragment(), OnListFragmentInteractionListener {
         val progressBar = view.findViewById<View>(R.id.progress) as ContentLoadingProgressBar
         val recyclerView = view.findViewById<View>(R.id.list) as RecyclerView
         val context = view.context
-        recyclerView.layoutManager = GridLayoutManager(context, 2)
+        recyclerView.layoutManager = GridLayoutManager(context, 1)
         updateAdapter(progressBar, recyclerView)
         return view
     }
@@ -46,10 +56,18 @@ class BestSellerBooksFragment : Fragment(), OnListFragmentInteractionListener {
         progressBar.show()
 
         // Create and set up an AsyncHTTPClient() here
+        val client = AsyncHttpClient()
+        val params = RequestParams()
+        params["api_key"] = API_KEY
+        params["language"] = "en-US"
+        params["page"] = "1"
 
         // Using the client, perform the HTTP request
 
-        /* Uncomment me once you complete the above sections!
+        client[
+                "https://api.themoviedb.org/3/movie/now_playing",
+                params,
+                object : JsonHttpResponseHandler()
         {
             /*
              * The onSuccess function gets called when
@@ -65,7 +83,20 @@ class BestSellerBooksFragment : Fragment(), OnListFragmentInteractionListener {
 
                 //TODO - Parse JSON into Models
 
-                val models : List<BestSellerBook> = null // Fix me!
+//                val resultsJSON : JSONObject = json.jsonObject.get("results") as JSONObject
+//                val resultsRAWJson : String = resultsJSON.get("overview").toString()
+
+                val resultsJSON : JSONArray? = json?.jsonObject?.getJSONArray("results")
+//                val resultsRAWJson : String = resultsJSON?.get("overview").toString()
+
+                val gson = Gson()
+                val typeToken = object : TypeToken<List<BestSellerBook>>() {}.type
+
+
+                val models : List<BestSellerBook> = gson.fromJson(resultsJSON.toString(), typeToken)
+//                val models : List<BestSellerBook> = ArrayList()
+                
+                // Fix me!
                 recyclerView.adapter = BestSellerBooksRecyclerViewAdapter(models, this@BestSellerBooksFragment)
 
                 // Look for this in Logcat:
@@ -91,7 +122,7 @@ class BestSellerBooksFragment : Fragment(), OnListFragmentInteractionListener {
                 }
             }
         }]
-        */
+
 
     }
 
@@ -103,3 +134,4 @@ class BestSellerBooksFragment : Fragment(), OnListFragmentInteractionListener {
     }
 
 }
+
